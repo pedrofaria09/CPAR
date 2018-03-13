@@ -1,10 +1,9 @@
 GPLUS = g++
-PAPIFLAG = -I /opt/papi/include /opt/papi/lib/libpapi.a
+PAPIFLAG = -w -I /opt/papi/include /opt/papi/lib/libpapi.a
 JC = javac
 all:
 	$(GPLUS) mul.cpp $(PAPIFLAG) -o multiplication -fopenmp
 	$(GPLUS) -O3 mul.cpp $(PAPIFLAG) -o multiplication_optimized -fopenmp
-	$(GPLUS) mul.cpp $(PAPIFLAG) -o multiplication_omp -fopenmp
 	$(JC) -g mul_j.java
 
 run_normal:
@@ -17,10 +16,9 @@ run_normal_j:
 	java mul_j
 
 test:
-	./multiplication_omp 1500 5 1 test_cx.txt
-	./multiplication_omp 1500 5 5 test_cx.txt
-	./multiplication_omp 1500 5 8 test_cx.txt
-	./multiplication_optimized 1500 2 1 test_cx.txt
+	./multiplication_optimized 2000 5 5 test_cx.txt
+	./multiplication_optimized 2000 5 8 test_cx.txt
+	./multiplication_optimized 2000 2 1 test_cx.txt
 
 tests:
 	./multiplication_optimized 500 3 1

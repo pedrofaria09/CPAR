@@ -32,7 +32,7 @@ void MulLineCol_omp(int n, float ** a, float ** b, float ** c, int n_threads){
 
 void MulEleCol_omp(int n, float ** a, float ** b, float ** c, int n_threads){
 	int i, j, k;
-	cout<<"There are "<<omp_get_num_threads()<<" threads"<<endl;
+
 	#pragma omp parallel for private(k, j) num_threads(n_threads)
 	for(i = 0; i < n; i++){
 		for(k = 0; k < n; k++){
@@ -69,8 +69,8 @@ void MulEleCol(int n, float ** a, float ** b, float ** c){
 
 
 int main(int argc, char *argv[]) {
-	int n, choice, retval;
-	float clock_time;
+	int n, choice, retval, flops, cml1flops, cml2flops;
+	float clock_time, instPc;
 	int EventSet=PAPI_NULL;
 	int n_threads = 1;
 	long long values[3];
@@ -166,6 +166,11 @@ int main(int argc, char *argv[]) {
 			exit(-1);
 		}
 
+		if((retval = PAPI_add_event(EventSet, PAPI_TOT_CYC)) != PAPI_OK){
+			PAPI_perror("PAPI_add_event_TOT_CYC_1");
+			exit(-1);
+		}
+
 		if((retval = PAPI_start(EventSet)) != PAPI_OK ){
 			PAPI_perror("PAPI_start_1");
 			exit(-1);
@@ -195,12 +200,18 @@ int main(int argc, char *argv[]) {
 			exit(-1);
 	  }
 
+		flops = (2*n^3)/clock_time;
+		cml1flops = values[0]/(2*n^3);
+		cml2flops = values[1]/(2*n^3);
+		instPc = (float)values[2]/(float)values[3];
+
 		printf("Medidas do algoritmo 1: \n");
-		printf("Tempo: %f(s) Instrucoes: %lld L1_DCM: %lld  L2_DCM: %lld \n", clock_time, values[2], values[0], values[1]);
+		printf("Tempo: %f(s) Flops: %d Instrucoes: %lld Ciclos: %lld Instr/Ciclos: %f \nL1_DCM: %lld  L2_DCM: %lld CM_F_L1: %d CM_F_L2: %d\n", clock_time, flops, values[2], values[3], instPc, values[0], values[1], cml1flops, cml2flops);
 		printf("============================ \n\n");
 
 		outputFile << "Medidas do algoritmo 1 - Tamanho Matriz: " << n << endl;
-		outputFile << "Tempo: " << clock_time << "(s) Instrucoes: " << values[2] << " L1_DCM: " <<  values[0] << " L2_DCM: " << values[1] << endl;
+		outputFile << "Tempo: " << clock_time << "(s) Flops: " << flops << " Instrucoes: " << values[2] << " Ciclos: " << values[3] << " Instr/Ciclos: " << instPc << endl;
+		outputFile << "L1_DCM: " <<  values[0] << " L2_DCM: " << values[1] << " CM_F_L1: " << cml1flops << " CM_FL2 : " << cml2flops << endl;
 
 
 		if((retval = PAPI_reset(EventSet)) != PAPI_OK ){
@@ -220,6 +231,11 @@ int main(int argc, char *argv[]) {
 
 		if((retval = PAPI_remove_event(EventSet, PAPI_TOT_INS)) != PAPI_OK ){
 			PAPI_perror("PAPI_remove_event_TOT_INS_1");
+			exit(-1);
+	  }
+
+		if((retval = PAPI_remove_event(EventSet, PAPI_TOT_CYC)) != PAPI_OK ){
+			PAPI_perror("PAPI_remove_event_TOT_CYC_1");
 			exit(-1);
 	  }
 
@@ -262,6 +278,11 @@ int main(int argc, char *argv[]) {
 			exit(-1);
 		}
 
+		if((retval = PAPI_add_event(EventSet, PAPI_TOT_CYC)) != PAPI_OK){
+			PAPI_perror("PAPI_add_event_TOT_CYC_2");
+			exit(-1);
+		}
+
 		if((retval = PAPI_start(EventSet)) != PAPI_OK ){
 			PAPI_perror("PAPI_start_2");
 			exit(-1);
@@ -289,11 +310,18 @@ int main(int argc, char *argv[]) {
 			exit(-1);
 	  }
 
+		flops = (2*n^3)/clock_time;
+		cml1flops = values[0]/(2*n^3);
+		cml2flops = values[1]/(2*n^3);
+		instPc = (float)values[2]/(float)values[3];
+
 		printf("Medidas do algoritmo 2: \n");
-		printf("Tempo: %f(s) Instrucoes: %lld L1_DCM: %lld  L2_DCM: %lld \n", clock_time, values[2], values[0], values[1]);
+		printf("Tempo: %f(s) Flops: %d Instrucoes: %lld Ciclos: %lld Instr/Ciclos: %f \nL1_DCM: %lld  L2_DCM: %lld CM_F_L1: %d CM_F_L2: %d\n", clock_time, flops, values[2], values[3], instPc, values[0], values[1], cml1flops, cml2flops);
 		printf("============================ \n\n");
+
 		outputFile << "Medidas do algoritmo 2 - Tamanho Matriz: " << n << endl;
-		outputFile << "Tempo: " << clock_time << "(s) Instrucoes: " << values[2] << " L1_DCM: " <<  values[0] << " L2_DCM: " << values[1] << endl;
+		outputFile << "Tempo: " << clock_time << "(s) Flops: " << flops << " Instrucoes: " << values[2] << " Ciclos: " << values[3] << " Instr/Ciclos: " << instPc << endl;
+		outputFile << "L1_DCM: " <<  values[0] << " L2_DCM: " << values[1] << " CM_F_L1: " << cml1flops << " CM_FL2 : " << cml2flops << endl;
 
 		if((retval = PAPI_reset(EventSet)) != PAPI_OK ){
 			PAPI_perror("PAPI_reset_1");
@@ -312,6 +340,11 @@ int main(int argc, char *argv[]) {
 
 		if((retval = PAPI_remove_event(EventSet, PAPI_TOT_INS)) != PAPI_OK ){
 			PAPI_perror("PAPI_remove_event_TOT_INS_1");
+			exit(-1);
+	  }
+
+		if((retval = PAPI_remove_event(EventSet, PAPI_TOT_CYC)) != PAPI_OK ){
+			PAPI_perror("PAPI_remove_event_TOT_CYC_1");
 			exit(-1);
 	  }
 
