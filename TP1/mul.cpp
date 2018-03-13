@@ -17,27 +17,27 @@
 
 using namespace std;
 
-void MulLineCol_Opt(int n, float ** a, float ** b, float ** c, int n_threads){
-	int xi, xj, xk;
+void MulLineCol_omp(int n, float ** a, float ** b, float ** c, int n_threads){
+	int i, j, k;
 
-	#pragma omp parallel for private(xj, xk) num_threads(n_threads)
-	for(xi = 0; xi < n; xi++){
-		for(xj = 0; xj < n; xj++){
-			for(xk = 0; xk < n; xk++){
-				c[xi][xj] += a[xi][xk] * b[xk][xj];
+	#pragma omp parallel for private(j, k) num_threads(n_threads)
+	for(i = 0; i < n; i++){
+		for(j = 0; j < n; j++){
+			for(k = 0; k < n; k++){
+				c[i][j] += a[i][k] * b[k][j];
 			}
 		}
 	}
 }
 
-void MulEleCol_Opt(int n, float ** a, float ** b, float ** c, int n_threads){
-	int yi, yj, yk;
-
-	#pragma omp parallel for private(yk, yj) num_threads(n_threads)
-	for(yi = 0; yi < n; yi++){
-		for(yk = 0; yk < n; yk++){
-			for(yj = 0; yj < n; yj++){
-				c[yi][yj] += a[yi][yk] * b[yk][yj];
+void MulEleCol_omp(int n, float ** a, float ** b, float ** c, int n_threads){
+	int i, j, k;
+	cout<<"There are "<<omp_get_num_threads()<<" threads"<<endl;
+	#pragma omp parallel for private(k, j) num_threads(n_threads)
+	for(i = 0; i < n; i++){
+		for(k = 0; k < n; k++){
+			for(j = 0; j < n; j++){
+				c[i][j] += a[i][k] * b[k][j];
 			}
 		}
 	}
@@ -76,7 +76,6 @@ int main(int argc, char *argv[]) {
 	long long values[3];
 
 	std::ofstream outputFile;
-  outputFile.open("test_c2.txt", std::ofstream::out | std::ofstream::app);
 
 	if(argc == 1){
 		cout << "Introduza o tamanho das matrizes > ";
@@ -91,14 +90,20 @@ int main(int argc, char *argv[]) {
 			cout << "Introduza o nr de threads > ";
 			cin >> n_threads;
 		}
-	} else if(argc == 4){
+		outputFile.open("test_cpp.txt", std::ofstream::out | std::ofstream::app);
+
+	} else if(argc == 5){
 		n = atoi(argv[1]);
 		choice = atoi(argv[2]);
 		n_threads = atoi(argv[3]);
+
+		outputFile.open(argv[4], std::ofstream::out | std::ofstream::app);
+
 	} else {
 		cout << "Correct output: ./file Matrix_Size Option Nr_Threads" << endl;
 		cout << "\n===== Options =====\n 1-Linha/Coluna \n 2-Elemento/Coluna \n 3-Ambos(1 e 2)" << endl ;
 		cout << " 4-Linha/Coluna-Paralelizada \n 5-Elemento/Coluna-Paralelizada \n 6-Ambos(4 e 5)" << endl;
+		exit(-1);
 	}
 
 	float** a = new float*[n];
@@ -179,7 +184,7 @@ int main(int argc, char *argv[]) {
 			clock_time = (float)omp_get_wtime();
 
 			//Multiplication of Matrix a b, in c - Line with Column
-			MulLineCol_Opt(n, a, b, c, n_threads);
+			MulLineCol_omp(n, a, b, c, n_threads);
 
 			clock_time = (float)((omp_get_wtime() - clock_time));
 		}
@@ -275,7 +280,7 @@ int main(int argc, char *argv[]) {
 			clock_time = (float)omp_get_wtime();
 
 			//Multiplication of Matrix a b, in c - Line with Column
-			MulEleCol_Opt(n, a, b, c, n_threads);
+			MulEleCol_omp(n, a, b, c, n_threads);
 
 			clock_time = (float)((omp_get_wtime() - clock_time));
 		}
