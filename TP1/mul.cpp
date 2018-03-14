@@ -100,9 +100,9 @@ int main(int argc, char *argv[]) {
 		outputFile.open(argv[4], std::ofstream::out | std::ofstream::app);
 
 	} else {
-		cout << "Correct output: ./file Matrix_Size Option Nr_Threads" << endl;
+		cout << "Correct output: ./file Matrix_Size Option Nr_Threads File_Name" << endl;
 		cout << "\n===== Options =====\n 1-Linha/Coluna \n 2-Elemento/Coluna \n 3-Ambos(1 e 2)" << endl ;
-		cout << " 4-Linha/Coluna-Paralelizada \n 5-Elemento/Coluna-Paralelizada \n 6-Ambos(4 e 5)" << endl;
+		cout << " 4-Linha/Coluna-Paralelizada \n 5-Elemento/Coluna-Paralelizada \n 6-Ambos(4 e 5)\n\n" << endl;
 		exit(-1);
 	}
 

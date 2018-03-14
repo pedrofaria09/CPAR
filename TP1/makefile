@@ -2,97 +2,134 @@ GPLUS = g++
 PAPIFLAG = -w -I /opt/papi/include /opt/papi/lib/libpapi.a
 JC = javac
 all:
-	$(GPLUS) mul.cpp $(PAPIFLAG) -o multiplication -fopenmp
-	$(GPLUS) -O3 mul.cpp $(PAPIFLAG) -o multiplication_optimized -fopenmp
+	$(GPLUS) -O3 mul.cpp $(PAPIFLAG) -o mul -fopenmp
 	$(JC) -g mul_j.java
 
-run_normal:
-	./multiplication
+run:
+	./mul
 
-run_optimized:
-	./multiplication_optimized
-
-run_normal_j:
+run-java:
 	java mul_j
 
-test:
-	./multiplication_optimized 2000 5 5 test_cx.txt
-	./multiplication_optimized 2000 5 8 test_cx.txt
-	./multiplication_optimized 2000 2 1 test_cx.txt
+run_test_1:
+	./mul 500 1 1 test_1.txt
+	./mul 1000 1 1 test_1.txt
+	./mul 1500 1 1 test_1.txt
+	./mul 2000 1 1 test_1.txt
+	./mul 2500 1 1 test_1.txt
+	./mul 3000 1 1 test_1.txt
 
-tests:
-	./multiplication_optimized 500 3 1
-	./multiplication_optimized 1000 3 1
-	./multiplication_optimized 1500 3 1
-	./multiplication_optimized 2000 3 1
-	./multiplication_optimized 2500 3 1
-	./multiplication_optimized 3000 3 1
+run_test_2:
+	./mul 500 2 1 test_2.txt
+	./mul 1000 2 1 test_2.txt
+	./mul 1500 2 1 test_2.txt
+	./mul 2000 2 1 test_2.txt
+	./mul 2500 2 1 test_2.txt
+	./mul 3000 2 1 test_2.txt
+	./mul 5000 2 1 test_2.txt
+	./mul 6000 2 1 test_2.txt
+	./mul 7000 2 1 test_2.txt
+	./mul 8000 2 1 test_2.txt
+	./mul 9000 2 1 test_2.txt
+	./mul 10000 2 1 test_2.txt
 
-tests_2:
-	./multiplication_optimized 5000 2 1
-	./multiplication_optimized 6000 2 1
-	./multiplication_optimized 7000 2 1
-	./multiplication_optimized 8000 2 1
-	./multiplication_optimized 9000 2 1
-	./multiplication_optimized 10000 2 1
-
-tests_par:
-	./multiplication_optimized 500 6 1
-	./multiplication_optimized 1000 6 1
-	./multiplication_optimized 1500 6 1
-	./multiplication_optimized 2000 6 1
-	./multiplication_optimized 2500 6 1
-	./multiplication_optimized 3000 6 1
-	./multiplication_optimized 500 6 2
-	./multiplication_optimized 1000 6 2
-	./multiplication_optimized 1500 6 2
-	./multiplication_optimized 2000 6 2
-	./multiplication_optimized 2500 6 2
-	./multiplication_optimized 3000 6 2
-	./multiplication_optimized 500 6 3
-	./multiplication_optimized 1000 6 3
-	./multiplication_optimized 1500 6 3
-	./multiplication_optimized 2000 6 3
-	./multiplication_optimized 2500 6 3
-	./multiplication_optimized 3000 6 3
-	./multiplication_optimized 500 6 4
-	./multiplication_optimized 1000 6 4
-	./multiplication_optimized 1500 6 4
-	./multiplication_optimized 2000 6 4
-	./multiplication_optimized 2500 6 4
-	./multiplication_optimized 3000 6 4
-	./multiplication_optimized 500 6 5
-	./multiplication_optimized 1000 6 5
-	./multiplication_optimized 1500 6 5
-	./multiplication_optimized 2000 6 5
-	./multiplication_optimized 2500 6 5
-	./multiplication_optimized 3000 6 5
-	./multiplication_optimized 500 6 6
-	./multiplication_optimized 1000 6 6
-	./multiplication_optimized 1500 6 6
-	./multiplication_optimized 2000 6 6
-	./multiplication_optimized 2500 6 6
-	./multiplication_optimized 3000 6 6
-	./multiplication_optimized 500 6 7
-	./multiplication_optimized 1000 6 7
-	./multiplication_optimized 1500 6 7
-	./multiplication_optimized 2000 6 7
-	./multiplication_optimized 2500 6 7
-	./multiplication_optimized 3000 6 7
-	./multiplication_optimized 500 6 8
-	./multiplication_optimized 1000 6 8
-	./multiplication_optimized 1500 6 8
-	./multiplication_optimized 2000 6 8
-	./multiplication_optimized 2500 6 8
-	./multiplication_optimized 3000 6 8
-
-tests_java:
-	java mul_j 500 1
-	java mul_j 1000 1
-	java mul_j 1500 1
-	java mul_j 2000 1
-	java mul_j 2500 1
-	java mul_j 3000 1
+run_test_3:
+	./mul 500 4 1 test_3_opt1_th1.txt
+	./mul 1000 4 1 test_3_opt1_th1.txt
+	./mul 1500 4 1 test_3_opt1_th1.txt
+	./mul 2000 4 1 test_3_opt1_th1.txt
+	./mul 2500 4 1 test_3_opt1_th1.txt
+	./mul 3000 4 1 test_3_opt1_th1.txt
+	./mul 500 4 2 test_3_opt1_th2.txt
+	./mul 1000 4 2 test_3_opt1_th2.txt
+	./mul 1500 4 2 test_3_opt1_th2.txt
+	./mul 2000 4 2 test_3_opt1_th2.txt
+	./mul 2500 4 2 test_3_opt1_th2.txt
+	./mul 3000 4 2 test_3_opt1_th2.txt
+	./mul 500 4 3 test_3_opt1_th3.txt
+	./mul 1000 4 3 test_3_opt1_th3.txt
+	./mul 1500 4 3 test_3_opt1_th3.txt
+	./mul 2000 4 3 test_3_opt1_th3.txt
+	./mul 2500 4 3 test_3_opt1_th3.txt
+	./mul 3000 4 3 test_3_opt1_th3.txt
+	./mul 500 4 4 test_3_opt1_th4.txt
+	./mul 1000 4 4 test_3_opt1_th4.txt
+	./mul 1500 4 4 test_3_opt1_th4.txt
+	./mul 2000 4 4 test_3_opt1_th4.txt
+	./mul 2500 4 4 test_3_opt1_th4.txt
+	./mul 3000 4 4 test_3_opt1_th4.txt
+	./mul 500 4 5 test_3_opt1_th5.txt
+	./mul 1000 4 5 test_3_opt1_th5.txt
+	./mul 1500 4 5 test_3_opt1_th5.txt
+	./mul 2000 4 5 test_3_opt1_th5.txt
+	./mul 2500 4 5 test_3_opt1_th5.txt
+	./mul 3000 4 5 test_3_opt1_th5.txt
+	./mul 500 4 6 test_3_opt1_th6.txt
+	./mul 1000 4 6 test_3_opt1_th6.txt
+	./mul 1500 4 6 test_3_opt1_th6.txt
+	./mul 2000 4 6 test_3_opt1_th6.txt
+	./mul 2500 4 6 test_3_opt1_th6.txt
+	./mul 3000 4 6 test_3_opt1_th6.txt
+	./mul 500 4 7 test_3_opt1_th7.txt
+	./mul 1000 4 7 test_3_opt1_th7.txt
+	./mul 1500 4 7 test_3_opt1_th7.txt
+	./mul 2000 4 7 test_3_opt1_th7.txt
+	./mul 2500 4 7 test_3_opt1_th7.txt
+	./mul 3000 4 7 test_3_opt1_th7.txt
+	./mul 500 4 8 test_3_opt1_th8.txt
+	./mul 1000 4 8 test_3_opt1_th8.txt
+	./mul 1500 4 8 test_3_opt1_th8.txt
+	./mul 2000 4 8 test_3_opt1_th8.txt
+	./mul 2500 4 8 test_3_opt1_th8.txt
+	./mul 3000 4 8 test_3_opt1_th8.txt
+	./mul 500 5 1 test_3_opt2_th1.txt
+	./mul 1000 5 1 test_3_opt2_th1.txt
+	./mul 1500 5 1 test_3_opt2_th1.txt
+	./mul 2000 5 1 test_3_opt2_th1.txt
+	./mul 2500 5 1 test_3_opt2_th1.txt
+	./mul 3000 5 1 test_3_opt2_th1.txt
+	./mul 500 5 2 test_3_opt2_th2.txt
+	./mul 1000 5 2 test_3_opt2_th2.txt
+	./mul 1500 5 2 test_3_opt2_th2.txt
+	./mul 2000 5 2 test_3_opt2_th2.txt
+	./mul 2500 5 2 test_3_opt2_th2.txt
+	./mul 3000 5 2 test_3_opt2_th2.txt
+	./mul 500 5 3 test_3_opt2_th3.txt
+	./mul 1000 5 3 test_3_opt2_th3.txt
+	./mul 1500 5 3 test_3_opt2_th3.txt
+	./mul 2000 5 3 test_3_opt2_th3.txt
+	./mul 2500 5 3 test_3_opt2_th3.txt
+	./mul 3000 5 3 test_3_opt2_th3.txt
+	./mul 500 5 4 test_3_opt2_th4.txt
+	./mul 1000 5 4 test_3_opt2_th4.txt
+	./mul 1500 5 4 test_3_opt2_th4.txt
+	./mul 2000 5 4 test_3_opt2_th4.txt
+	./mul 2500 5 4 test_3_opt2_th4.txt
+	./mul 3000 5 4 test_3_opt2_th4.txt
+	./mul 500 5 5 test_3_opt2_th5.txt
+	./mul 1000 5 5 test_3_opt2_th5.txt
+	./mul 1500 5 5 test_3_opt2_th5.txt
+	./mul 2000 5 5 test_3_opt2_th5.txt
+	./mul 2500 5 5 test_3_opt2_th5.txt
+	./mul 3000 5 5 test_3_opt2_th5.txt
+	./mul 500 5 6 test_3_opt2_th6.txt
+	./mul 1000 5 6 test_3_opt2_th6.txt
+	./mul 1500 5 6 test_3_opt2_th6.txt
+	./mul 2000 5 6 test_3_opt2_th6.txt
+	./mul 2500 5 6 test_3_opt2_th6.txt
+	./mul 3000 5 6 test_3_opt2_th6.txt
+	./mul 500 5 7 test_3_opt2_th7.txt
+	./mul 1000 5 7 test_3_opt2_th7.txt
+	./mul 1500 5 7 test_3_opt2_th7.txt
+	./mul 2000 5 7 test_3_opt2_th7.txt
+	./mul 2500 5 7 test_3_opt2_th7.txt
+	./mul 3000 5 7 test_3_opt2_th7.txt
+	./mul 500 5 8 test_3_opt2_th8.txt
+	./mul 1000 5 8 test_3_opt2_th8.txt
+	./mul 1500 5 8 test_3_opt2_th8.txt
+	./mul 2000 5 8 test_3_opt2_th8.txt
+	./mul 2500 5 8 test_3_opt2_th8.txt
+	./mul 3000 5 8 test_3_opt2_th8.txt
 
 clean:
-	-rm multiplication multiplication_optimized test_*.txt mul_j.class
+	-rm mul test_*.txt mul_j.class
