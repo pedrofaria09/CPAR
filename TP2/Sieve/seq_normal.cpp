@@ -26,13 +26,10 @@ void printPrimes(vector<bool> values){
 }
 
 void seq(long long n) {
-    float clock_time;
 
     vector<bool> values(n-1, true);
-    
-    long long k = 2;
-    long long small = 3;
-    long long i = 0;
+    float clock_time;
+    long long k = 2, small = 3, i = 0;
 
     clock_time = (float)clock();
     while (k*k <= n) {

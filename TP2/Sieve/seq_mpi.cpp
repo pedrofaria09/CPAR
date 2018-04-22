@@ -28,7 +28,7 @@ void printPrimes(vector<bool> values){
      cout << "Numeros primos:";
     for(long long i = 0; i < values.size(); i++){
         if (values[i])
-			cout << " " << (i+2) << " ";
+            cout << " " << (i+2) << " ";
     }
     cout << endl;
 }
