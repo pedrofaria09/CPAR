@@ -4,6 +4,7 @@
 #include <vector>
 #include <ctime>
 #include <cmath>
+#include <fstream>
 
 #include "mpi.h"
 
@@ -33,7 +34,20 @@ void printPrimes(vector<bool> values){
     cout << endl;
 }
 
-void seq(long long n) {
+void writeToCSV(vector<bool> values, char* filename){
+    std::ofstream outputFile;
+
+    outputFile.open(filename, std::ofstream::out | std::ofstream::app);
+
+    for(long long i = 0; i < values.size(); i++){
+        if(values[i])
+            outputFile << (i+2) << ",";
+    }
+
+    outputFile.close();
+}
+
+void seq(long long n, char* filename) {
     // Initialize the MPI environment
     MPI_Init( NULL, NULL );
 
@@ -45,7 +59,6 @@ void seq(long long n) {
     int world_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
-
     float init_time, fin_time;
     long long k = 2, i = 0, j = 0;
     int root = 0, total_primes = 0;
@@ -54,32 +67,32 @@ void seq(long long n) {
         init_time = (float)clock();
 
     long long bk_size = BK_SIZE(world_rank, n-1, world_size);
-    long long bk_low = 2+BK_LOW(world_rank, n-1, world_size);
-    long long bk_high = 2+BK_HIGH(world_rank, n-1, world_size);
+    long long low_value = 2+BK_LOW(world_rank, n-1, world_size);
+    long long high_value = 2+BK_HIGH(world_rank, n-1, world_size);
 
     vector<bool> values(bk_size, true);
 
     while (k*k <= n) {
 
-        if(k*k < bk_low){
-            if(bk_low % k == 0){
-                j = bk_low;
+        if(k*k < low_value){
+            if(low_value % k == 0){
+                j = low_value;
             }else{
-                j = (bk_low + (k-(bk_low % k)));
+                j = (low_value + (k-(low_value % k)));
             }
         }else{
             j = k*k;
         }
 
         // Mark as false all multiples of k between k*k and n
-        for (i = j; i <= bk_high; i += k){
-            values[i-bk_low] = false;
+        for (i = j; i <= high_value; i += k){
+            values[i-low_value] = false;
         }
 
         // Set k as the smaller urmarked number > k
         if(world_rank == root){
-            for(i = k+1; i < bk_high; i++){
-                if (values[i-bk_low]) {
+            for(i = k+1; i < high_value; i++){
+                if (values[i-low_value]) {
                     k = i;
                     break;
                 }
@@ -104,26 +117,30 @@ void seq(long long n) {
 
     MPI_Finalize();
 
+    printPrimes(values);
+    writeToCSV(values, filename);
+
 }
 
 int main(int argc, char **argv){
 
-    seq(300000000);
-
-    /*if(argc == 1){
+    if(argc == 1){
         int n;
+        char* filename;
 
         cout << "Introduza a quantidade de numeros a verificar >";
         cin >> n;
+        cout << "Introduza o nome do ficheiro (Ex: teste.csv) >";
+        cin >> filename;
 
-        seq(n);
+        seq(n, filename);
 
-    }else if(argc == 2){
-        seq(atoi(argv[1]));
+    }else if(argc == 3){
+        seq(atoi(argv[2]), argv[1]);
     }else{
-        cout << "Input invalido! Introduza: ./file Nr_a_verificar_primos" << endl;
+        cout << "Input invalido! Introduza: ./file Nome_Ficheiro_CSV Nr_a_verificar_primos" << endl;
         return -1;
-    }*/
+    }
 
     return 0;
 }

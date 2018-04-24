@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <fstream>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ long long numberOfPrimes(vector<bool> values){
 }
 
 void printPrimes(vector<bool> values){
-     cout << "Numeros primos:";
+    cout << "Numeros primos:";
     for(long long i = 0; i < values.size(); i++){
         if (values[i])
 			cout << " " << (i+2) << " ";
@@ -25,7 +26,20 @@ void printPrimes(vector<bool> values){
     cout << endl;
 }
 
-void seq(long long n) {
+void writeToCSV(vector<bool> values, char* filename){
+    std::ofstream outputFile;
+
+    outputFile.open(filename, std::ofstream::out | std::ofstream::app);
+
+    for(long long i = 0; i < values.size(); i++){
+        if(values[i])
+            outputFile << (i+2) << ",";
+    }
+
+    outputFile.close();
+}
+
+void seq(long long n, char* filename) {
 
     vector<bool> values(n-1, true);
     float clock_time;
@@ -52,23 +66,27 @@ void seq(long long n) {
     cout << "Tempo de execucao: " <<  clock_time << " (s)" <<endl;
 
     cout << "Numero de primos: " << numberOfPrimes(values) << endl;
-    //printPrimes(values);
+    printPrimes(values);
+    //writeToCSV(values, filename);
 }
 
 int main(int argc, char **argv){
-
+    
     if(argc == 1){
         int n;
+        char* filename;
 
         cout << "Introduza a quantidade de numeros a verificar >";
         cin >> n;
+        cout << "Introduza o nome do ficheiro (Ex: teste.csv) >";
+        cin >> filename;
 
-        seq(n);
+        seq(n, filename);
 
-    }else if(argc == 2){
-        seq(atoi(argv[1]));
+    }else if(argc == 3){
+        seq(atoi(argv[2]), argv[1]);
     }else{
-        cout << "Input invalido! Introduza: ./file Nr_a_verificar_primos" << endl;
+        cout << "Input invalido! Introduza: ./file Nome_Ficheiro_CSV Nr_a_verificar_primos" << endl;
         return -1;
     }
 
