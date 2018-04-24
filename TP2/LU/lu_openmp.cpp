@@ -6,12 +6,14 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <omp.h>
 
 using namespace std;
  
-void lu(float ** a, float ** l, float ** u, int n){
+void lu(float ** a, float ** l, float ** u, int n, int n_threads){
     int i = 0, j = 0, k = 0;
 
+    #pragma omp parallel for private(j, k) num_threads(n_threads)
     for (i = 0; i < n; i++){
         for (j = 0; j < n; j++){
             if (j < i)
@@ -123,9 +125,9 @@ int main(int argc, char **argv){
 
     a = fillMatrixFromCSV(filename, n);
 
-    clock_time = (float)clock();
-    lu(a, l, u, n);
-    clock_time = (float)((clock() - clock_time)/CLOCKS_PER_SEC);
+    clock_time = (float)omp_get_wtime();
+    lu(a, l, u, n, atoi(argv[2]));
+    clock_time = (float)((omp_get_wtime() - clock_time));
 
     cout << "Tempo de execucao: " <<  clock_time << " (s)" <<endl;
 
