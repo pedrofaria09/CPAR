@@ -12,7 +12,7 @@ run:
 	./seq_openmp primes_openmp_2.csv 20 2
 	./seq_openmp primes_openmp_3.csv 20 3
 	./seq_openmp primes_openmp_4.csv 20 4
-	mpirun -np 3 seq_mpi primes_mpi.csv 20
+	mpirun -np 2 seq_mpi primes_mpi.csv 20
 
 clean:
 	-rm seq_normal seq_openmp seq_mpi *.csv

@@ -82,14 +82,13 @@ float** fillMatrixFromCSV(char* filename, long long n){
 
     file.open(filename);
 
-    vector<int> values;
+    vector<float> values;
     while(getline(file,line)){
 
         string valueString;
-        int valueInt = 0;
         istringstream lineIss(line);
 
-        while(getline(lineIss, valueString, ';')){
+        while(getline(lineIss, valueString, ',')){
             
             while(!isdigit(valueString.at(0))){
                 if(valueString.at(0) == '-'){
@@ -101,7 +100,7 @@ float** fillMatrixFromCSV(char* filename, long long n){
                     valueString = valueString.substr(1,valueString.length());
             }
 
-            values.push_back(atoi(valueString.c_str()));
+            values.push_back(strtof(valueString.c_str(),0));
         }
 
         for (int j = 0; j < n; j++){
@@ -144,8 +143,8 @@ int main(int argc, char **argv){
 
 
     
-    /*output(a, n);
-    cout << "\nL Decomposition\n";
+    output(a, n);
+    /*cout << "\nL Decomposition\n";
     output(l, n);
     cout << "\nU Decomposition\n";
     output(u, n);*/

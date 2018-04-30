@@ -118,7 +118,7 @@ void seq(long long n, char* filename) {
     MPI_Finalize();
 
     printPrimes(values);
-    writeToCSV(values, filename);
+    //writeToCSV(values, filename);
 
 }
 
