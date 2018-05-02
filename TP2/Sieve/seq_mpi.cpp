@@ -25,23 +25,23 @@ long long numberOfPrimes(vector<bool> values){
     return count;
 }
 
-void printPrimes(vector<bool> values){
-     cout << "Numeros primos:";
-    for(long long i = 0; i < values.size(); i++){
+void printPrimes(vector<bool> values, int bk_size, int low_value, bool flag){
+    if(flag)
+        cout <<"Numeros primos:";
+    for(long long i = 0; i < bk_size; i++){
         if (values[i])
-            cout << " " << (i+2) << " ";
+            cout << " " << (low_value+i) << " ";
     }
-    cout << endl;
 }
 
-void writeToCSV(vector<bool> values, char* filename){
+void writeToCSV(vector<bool> values, char* filename, int bk_size, int low_value){
     std::ofstream outputFile;
 
     outputFile.open(filename, std::ofstream::out | std::ofstream::app);
 
-    for(long long i = 0; i < values.size(); i++){
+    for(long long i = 0; i < bk_size; i++){
         if(values[i])
-            outputFile << (i+2) << ",";
+            outputFile << (low_value+i) << ",";
     }
 
     outputFile.close();
@@ -104,7 +104,7 @@ void seq(long long n, char* filename) {
     }
 
     int block_primes = numberOfPrimes(values);
-
+    
     MPI_Reduce(&block_primes, &total_primes, 1, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
     
     if(world_rank == root){
@@ -113,12 +113,22 @@ void seq(long long n, char* filename) {
         cout << "Tempo de execucao: " <<  fin_time << " (s)" <<endl;
 
         cout << "Numero de primos: " << total_primes << endl;
+
+        //printPrimes(values, bk_size, low_value, 1);
+        //writeToCSV(values, filename, bk_size, low_value);
+        MPI_Send(&world_rank, 1, MPI_INT, ++world_rank, 0, MPI_COMM_WORLD);
+
+    }else if(world_rank != 0){
+
+        MPI_Recv(&world_rank, 1, MPI_INT, (world_rank-1), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        //printPrimes(values, bk_size, low_value, 0);
+        //writeToCSV(values, filename, bk_size, low_value);
+
+        if(world_size-1 != world_rank)
+            MPI_Send(&world_rank, 1, MPI_INT, world_rank+1, 0, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
-
-    printPrimes(values);
-    //writeToCSV(values, filename);
 
 }
 
@@ -137,6 +147,7 @@ int main(int argc, char **argv){
 
     }else if(argc == 3){
         seq(atoi(argv[2]), argv[1]);
+        //cout << endl;
     }else{
         cout << "Input invalido! Introduza: ./file Nome_Ficheiro_CSV Nr_a_verificar_primos" << endl;
         return -1;
