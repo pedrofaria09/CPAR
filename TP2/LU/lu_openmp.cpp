@@ -7,6 +7,7 @@
 #include <vector>
 #include <sstream>
 #include <omp.h>
+#include <cmath>
 
 using namespace std;
  
@@ -54,6 +55,23 @@ void output(float ** x, int n){
         }
         cout << "\n";
     }
+}
+
+
+void writeToCSV(float ** x, long long n, char* filename){
+    std::ofstream outputFile;
+
+    outputFile.open(filename, std::ofstream::out | std::ofstream::app);
+
+    int i = 0, j = 0;
+    for (i = 0; i < n; i++){
+        for (j = 0; j < n; j++){
+            outputFile << round(x[i][j]*10000)/10000.00 << ",";
+        }
+        outputFile << "\n";
+    }
+
+    outputFile.close();
 }
 
 long long getSizeOfMatrix(char* filename){
@@ -120,10 +138,28 @@ float** fillMatrixFromCSV(char* filename, long long n){
 int main(int argc, char **argv){
     int i = 0, j = 0;
     float clock_time;
+    std::ofstream outputFile;
 
-    char* filename = argv[1];
+    char* a_filename;
+    int n_threads;
+    char* l_filename;
+    char* u_filename;
+    char* test_filename;
 
-    long long n = getSizeOfMatrix(filename);
+    if(argc == 6){
+        n_threads = atoi(argv[1]);
+        a_filename = argv[2];
+        l_filename = argv[3];
+        u_filename = argv[4];
+        test_filename = argv[5];
+	} else {
+        cout << endl;
+        cout << "WRONG OUTPUT!!!!!" << endl;
+		cout << "Correct output: ./program_name N_THREADS A_CSV_NAME L_CSV_NAME U_CSV_NAME TEST_FILE_NAME" << endl << endl;
+		exit(-1);
+	}
+
+    long long n = getSizeOfMatrix(a_filename);
 
     float** a;
 	float** l = new float*[n];
@@ -134,19 +170,25 @@ int main(int argc, char **argv){
 		u[i] = new float[n];
 	}
 
-    a = fillMatrixFromCSV(filename, n);
+    a = fillMatrixFromCSV(a_filename, n);
 
     clock_time = (float)omp_get_wtime();
-    lu(a, l, u, n, atoi(argv[2]));
+    lu(a, l, u, n, n_threads);
     clock_time = (float)((omp_get_wtime() - clock_time));
 
     cout << "Tempo de execucao: " <<  clock_time << " (s)" <<endl;
 
+    writeToCSV(l, n, l_filename);
+    writeToCSV(u, n, u_filename);
+    outputFile.open(test_filename, std::ofstream::out | std::ofstream::app);
 
+    outputFile << "Medidas do algoritmo LU_OPENMP" << endl;
+	outputFile <<  "Tamanho Matriz: " << n << " Tempo: " << clock_time << " (s)" << endl;
 
-    
-    /*output(a, n);
-    cout << "\nL Decomposition\n";
+    outputFile.close();
+
+    //output(a, n);
+    /*cout << "\nL Decomposition\n";
     output(l, n);
     cout << "\nU Decomposition\n";
     output(u, n);*/
