@@ -39,11 +39,11 @@ void writeToCSV(vector<bool> values, char* filename){
     outputFile.close();
 }
 
-void seq(long long n, char* filename) {
-
+void seq(long long n, char* filename, char* test_filename) {
     vector<bool> values(n-1, true);
     float clock_time;
     long long k = 2, small = 3, i = 0;
+    std::ofstream outputFile;
 
     clock_time = (float)clock();
     while (k*k <= n) {
@@ -65,28 +65,40 @@ void seq(long long n, char* filename) {
 
     cout << "Tempo de execucao: " <<  clock_time << " (s)" <<endl;
 
-    cout << "Numero de primos: " << numberOfPrimes(values) << endl;
-    printPrimes(values);
-    //writeToCSV(values, filename);
+    int nr_primes = numberOfPrimes(values);
+
+    cout << "Numero de primos: " << nr_primes << endl;
+
+    outputFile.open(test_filename, std::ofstream::out | std::ofstream::app);
+    outputFile << "Medidas do algoritmo SIEVE_NORMAL - Tamanho Primos: " << n << endl;
+    outputFile << "Numeros primos encontrados: " << nr_primes << " Tempo: " << clock_time << " (s)" << endl;
+    outputFile.close();
+
+    //printPrimes(values);
+    writeToCSV(values, filename);
 }
 
 int main(int argc, char **argv){
     
     if(argc == 1){
         int n;
-        char* filename;
+        char* filename, *test_file;
 
         cout << "Introduza a quantidade de numeros a verificar >";
         cin >> n;
         cout << "Introduza o nome do ficheiro (Ex: teste.csv) >";
         cin >> filename;
+        cout << "Introduza o nome do ficheiro de teste (Ex: teste.txt) >";
+        cin >> test_file;
 
-        seq(n, filename);
+        seq(n, filename, test_file);
 
-    }else if(argc == 3){
-        seq(atoi(argv[2]), argv[1]);
+    }else if(argc == 4){
+        seq(atoi(argv[1]), argv[2], argv[3]);
     }else{
-        cout << "Input invalido! Introduza: ./file Nome_Ficheiro_CSV Nr_a_verificar_primos" << endl;
+        cout << endl;
+        cout << "WRONG OUTPUT!!!!!" << endl;
+		cout << "Correct output: ./program_name Primes_to_verify CSV_file Test_file" << endl << endl;
         return -1;
     }
 

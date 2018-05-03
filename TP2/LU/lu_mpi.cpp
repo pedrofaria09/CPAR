@@ -209,7 +209,7 @@ int main(int argc, char **argv){
 
         outputFile.open(test_filename, std::ofstream::out | std::ofstream::app);
         outputFile << "Medidas do algoritmo LU_MPI" << endl;
-        outputFile <<  "Tamanho Matriz: " << n << " Tempo: " << fin_time << " (s)" << endl;
+        outputFile << "Tamanho Matriz: " << n << " Tempo: " << fin_time << " (s)" << endl;
         outputFile.close();
 
         /*output(a, n);

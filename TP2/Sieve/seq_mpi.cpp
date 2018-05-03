@@ -47,7 +47,8 @@ void writeToCSV(vector<bool> values, char* filename, int bk_size, int low_value)
     outputFile.close();
 }
 
-void seq(long long n, char* filename) {
+void seq(long long n, char* filename, char* test_filename) {
+    std::ofstream outputFile;
     // Initialize the MPI environment
     MPI_Init( NULL, NULL );
 
@@ -114,15 +115,20 @@ void seq(long long n, char* filename) {
 
         cout << "Numero de primos: " << total_primes << endl;
 
+        outputFile.open(test_filename, std::ofstream::out | std::ofstream::app);
+        outputFile << "Medidas do algoritmo SIEVE_MPI - Tamanho Primos: " << n << endl;
+        outputFile << "Numeros primos encontrados: " << total_primes << " Tempo: " << fin_time << " (s)" << endl;
+        outputFile.close();
+
         //printPrimes(values, bk_size, low_value, 1);
-        //writeToCSV(values, filename, bk_size, low_value);
+        writeToCSV(values, filename, bk_size, low_value);
         MPI_Send(&world_rank, 1, MPI_INT, ++world_rank, 0, MPI_COMM_WORLD);
 
     }else if(world_rank != 0){
 
         MPI_Recv(&world_rank, 1, MPI_INT, (world_rank-1), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         //printPrimes(values, bk_size, low_value, 0);
-        //writeToCSV(values, filename, bk_size, low_value);
+        writeToCSV(values, filename, bk_size, low_value);
 
         if(world_size-1 != world_rank)
             MPI_Send(&world_rank, 1, MPI_INT, world_rank+1, 0, MPI_COMM_WORLD);
@@ -136,20 +142,24 @@ int main(int argc, char **argv){
 
     if(argc == 1){
         int n;
-        char* filename;
+        char* filename, *test_file;
 
         cout << "Introduza a quantidade de numeros a verificar >";
         cin >> n;
         cout << "Introduza o nome do ficheiro (Ex: teste.csv) >";
         cin >> filename;
+        cout << "Introduza o nome do ficheiro de teste (Ex: teste.txt) >";
+        cin >> test_file;
 
-        seq(n, filename);
+        seq(n, filename, test_file);
 
-    }else if(argc == 3){
-        seq(atoi(argv[2]), argv[1]);
+    }else if(argc == 4){
+        seq(atoi(argv[1]), argv[2], argv[3]);
         //cout << endl;
     }else{
-        cout << "Input invalido! Introduza: ./file Nome_Ficheiro_CSV Nr_a_verificar_primos" << endl;
+        cout << endl;
+        cout << "WRONG OUTPUT!!!!!" << endl;
+		cout << "Correct output: ./program_name Primes_to_verify CSV_file Test_file" << endl << endl;
         return -1;
     }
 

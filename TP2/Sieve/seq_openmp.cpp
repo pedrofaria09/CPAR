@@ -40,8 +40,8 @@ void writeToCSV(vector<bool> values, char* filename){
     outputFile.close();
 }
 
-void seq_openmp(long long n, int n_threads, char* filename) {
-
+void seq_openmp(long long n, int n_threads, char* filename, char* test_filename) {
+    std::ofstream outputFile;
     vector<bool> values(n-1, true);
     float clock_time;
     long long k = 2, small = 3, i = 0;
@@ -67,15 +67,23 @@ void seq_openmp(long long n, int n_threads, char* filename) {
 
     cout << "Tempo de execucao: " <<  clock_time << " (s)" <<endl;
 
-    cout << "Numero de primos: " << numberOfPrimes(values) << endl;
-    printPrimes(values);
-    //writeToCSV(values, filename);
+    int nr_primes = numberOfPrimes(values);
+
+    cout << "Numero de primos: " << nr_primes << endl;
+
+    outputFile.open(test_filename, std::ofstream::out | std::ofstream::app);
+    outputFile << "Medidas do algoritmo SIEVE_OPENMP - Tamanho Primos: " << n << endl;
+    outputFile << "Numeros primos encontrados: " << nr_primes << " Tempo: " << clock_time << " (s)" << endl;
+    outputFile.close();
+
+    //printPrimes(values);
+    writeToCSV(values, filename);
 }
 
 int main(int argc, char **argv){
     if(argc == 1){
         int n, n_threads;
-        char* filename;
+        char* filename, *test_file;
 
         cout << "Introduza a quantidade de numeros a verificar >";
         cin >> n;
@@ -83,13 +91,17 @@ int main(int argc, char **argv){
         cin >> n_threads;
         cout << "Introduza o nome do ficheiro (Ex: teste.csv) >";
         cin >> filename;
+        cout << "Introduza o nome do ficheiro de teste (Ex: teste.txt) >";
+        cin >> test_file;
 
-        seq_openmp(n, n_threads, filename);
+        seq_openmp(n, n_threads, filename, test_file);
 
-    }else if(argc == 4){
-        seq_openmp(atoi(argv[2]), atoi(argv[3]), argv[1]);
+    }else if(argc == 5){
+        seq_openmp(atoi(argv[1]), atoi(argv[2]), argv[3], argv[4]);
     }else{
-        cout << "Input invalido! Introduza: ./file Nome_Ficheiro_CSV Nr_a_verificar_primos Nr_Threads" << endl;
+        cout << endl;
+        cout << "WRONG OUTPUT!!!!!" << endl;
+		cout << "Correct output: ./program_name Primes_to_verify N_THREADS CSV_file Test_file" << endl << endl;
         return -1;
     }
     
