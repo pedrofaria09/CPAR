@@ -122,17 +122,18 @@ void seq(long long n, char* filename, char* test_filename) {
 
         //printPrimes(values, bk_size, low_value, 1);
         writeToCSV(values, filename, bk_size, low_value);
-        MPI_Send(&world_rank, 1, MPI_INT, ++world_rank, 0, MPI_COMM_WORLD);
+        //MPI_Send(&world_rank, 1, MPI_INT, ++world_rank, 0, MPI_COMM_WORLD);
 
-    }else if(world_rank != 0){
-
-        MPI_Recv(&world_rank, 1, MPI_INT, (world_rank-1), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        //printPrimes(values, bk_size, low_value, 0);
-        writeToCSV(values, filename, bk_size, low_value);
-
-        if(world_size-1 != world_rank)
-            MPI_Send(&world_rank, 1, MPI_INT, world_rank+1, 0, MPI_COMM_WORLD);
     }
+    //else if(world_rank != 0){
+
+        //MPI_Recv(&world_rank, 1, MPI_INT, (world_rank-1), 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        //printPrimes(values, bk_size, low_value, 0);
+        //writeToCSV(values, filename, bk_size, low_value);
+
+        //if(world_size-1 != world_rank)
+            //MPI_Send(&world_rank, 1, MPI_INT, world_rank+1, 0, MPI_COMM_WORLD);
+    //}
 
     MPI_Finalize();
 

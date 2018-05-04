@@ -177,9 +177,9 @@ int main(int argc, char **argv){
 		cout << "Correct output: ./program_name A_CSV_NAME L_CSV_NAME U_CSV_NAME TEST_FILE_NAME" << endl << endl;
 		exit(-1);
 	}
-
+    
     long long n = getSizeOfMatrix(a_filename);
-
+    
     float* a = fillMatrixFromCSV(a_filename, n);
     float* l = new float[n*n];
     float* u = new float[n*n];
@@ -199,7 +199,7 @@ int main(int argc, char **argv){
         init_time = (float)clock();
     
     lu(a, n, world_size, world_rank);
-
+    
     if(world_rank == root){
         fin_time = (float)((clock() - init_time)/CLOCKS_PER_SEC);
         
