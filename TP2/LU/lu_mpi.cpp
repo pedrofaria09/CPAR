@@ -85,6 +85,10 @@ void lu(float * a, long long n, int world_size, int world_rank){
 
             if(j % world_size == world_rank){
                 float* back = &a[j * n + ref_diag];
+
+                if(*back == 0)
+                    return;
+
                 float k = *back / row_diag[0];
                 int w;
 
@@ -212,8 +216,8 @@ int main(int argc, char **argv){
         outputFile << "Tamanho Matriz: " << n << " Tempo: " << fin_time << " (s)" << endl;
         outputFile.close();
 
-        /*output(a, n);
-        cout << "\nL Decomposition\n";
+        //output(a, n);
+        /*cout << "\nL Decomposition\n";
         output(l,n);
         cout << "\nU Decomposition\n";
         output(u, n);*/

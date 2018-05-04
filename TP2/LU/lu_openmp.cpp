@@ -14,34 +14,23 @@ using namespace std;
 void lu(float ** a, float ** l, float ** u, int n, int n_threads){
     int i = 0, j = 0, k = 0;
 
-    #pragma omp parallel for private(k, j) num_threads(n_threads)
-    for (int i = 0; i < n; i++) {
- 
-        // Upper Triangular
-        for (int k = i; k < n; k++) {
- 
-            // Summation of L(i, j) * U(j, k)
-            int sum = 0;
-            for (int j = 0; j < i; j++)
-                sum += (l[i][j] * u[j][k]);
- 
-            // Evaluating U(i, k)
-            u[i][k] = a[i][k] - sum;
-        }
- 
-        // Lower Triangular
-        for (int k = i; k < n; k++) {
-            if (i == k)
-                l[i][i] = 1; // Diagonal as 1
-            else {
-                
-                // Summation of L(k, j) * U(j, i)
-                int sum = 0;
-                for (int j = 0; j < i; j++)
-                    sum += (l[k][j] * u[j][i]);
-
-                // Evaluating L(k, i)
-                l[k][i] = (a[k][i] - sum) / u[i][i];
+    #pragma omp parallel for private(i, k) num_threads(n_threads)
+    for(j=0; j<n; j++){
+        for(i=0; i<n; i++){
+            if(i<=j){
+                u[i][j]=a[i][j];
+                for(k=0; k<=i-1; k++)
+                    u[i][j]-=l[i][k]*u[k][j];
+                if(i==j)
+                    l[i][j]=1;
+                else
+                    l[i][j]=0;
+            }else{
+                l[i][j]=a[i][j];
+                for(k=0; k<=j-1; k++)
+                    l[i][j]-=l[i][k]*u[k][j];
+                l[i][j]/=u[j][j];
+                u[i][j]=0;
             }
         }
     }
